@@ -3,7 +3,7 @@
 void setupSensors(pinData sensors[]) {
   // Initialize sensor objects
   for (int i = 0; i < numSensors; i++) {
-    sensors[i].sensorPin = A0 + i * 4;
+    sensors[i].sensorPin = A0 + i;
     sensors[i].readIndex = 0;
     sensors[i].total = 0;
     sensors[i].average = 0;
