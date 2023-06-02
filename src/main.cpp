@@ -1,18 +1,26 @@
 #include <Arduino.h>
+#include "drv_infrared.hpp"
 
-// put function declarations here:
-int myFunction(int, int);
+pinData sensors[numSensors];
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(9600);
+
+  setupSensors(sensors);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
+  int value1 = irRead(700, 500, sensors[0]);
+  int value2 = irRead(700, 500, sensors[1]);
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  Serial.print("Sensor 1 Average: ");
+  Serial.print(sensors[0].average);
+  Serial.print(", ");
+  Serial.println(value1);
+
+  Serial.print("Sensor 2 Average: ");
+  Serial.print(sensors[1].average);
+  Serial.print(", ");
+  Serial.println(value2);
+  delay(100);
 }

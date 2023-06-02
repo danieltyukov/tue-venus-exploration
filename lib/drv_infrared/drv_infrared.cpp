@@ -1,4 +1,14 @@
-#include <Arduino.h>
+#include "drv_infrared.hpp"
+
+void setupSensors(pinData sensors[]) {
+  // Initialize sensor objects
+  for (int i = 0; i < numSensors; i++) {
+    sensors[i].sensorPin = A0 + i * 4;
+    sensors[i].readIndex = 0;
+    sensors[i].total = 0;
+    sensors[i].average = 0;
+  }
+}
 
 int irRead(int cutoff1, int cutoff2, pinData& sensor) {
   int analogValue = analogRead(sensor.sensorPin);                     // Read the value from the analog channel
@@ -11,10 +21,10 @@ int irRead(int cutoff1, int cutoff2, pinData& sensor) {
   int count = max(sensor.readIndex + 1, numReadings);                  // Number of valid readings
   sensor.average = sensor.total / count;                               // Calculate the rolling average
 
-  if (sensor.average > cutoff1)      
+  if (sensor.average > cutoff1)
     return 1;
-  else if (sensor.average < cutoff2) 
+  else if (sensor.average < cutoff2)
     return 2;
-  else                        
+  else
     return 0;
 }
