@@ -5,7 +5,6 @@ pinData sensors[numSensors];
 
 void setup() {
   Serial.begin(9600);
-
   setupSensors(sensors);
 }
 

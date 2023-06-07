@@ -1,5 +1,5 @@
-#ifndef DRV_OBSTACLE_H
-#define DRV_OBSTACLE_H
+#ifndef DRV_ULTRASONIC_H
+#define DRV_ULTRASONIC_H
 
 #include <Arduino.h>
 #include <Servo.h>
@@ -8,4 +8,4 @@ const int pingPin = 9;
 
 bool detectObstacle();
 
-#endif  // DRV_OBSTACLE_H
+#endif  // DRV_ULTRASONIC_H
