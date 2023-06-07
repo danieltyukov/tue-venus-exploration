@@ -15,6 +15,6 @@ struct pinData {
 };
 
 void setupSensors(pinData sensors[]);
-int irRead(int cutoff1, int cutoff2, pinData& sensor);
+int irRead(int cutoff1, int cutoff2, pinData & sensor);
 
 #endif  // DRV_INFRARED_H
