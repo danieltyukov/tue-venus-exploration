@@ -1,5 +1,8 @@
 #include "drv_infrared.hpp"
 
+// include functions with distinct names for all the different IR sensors (Different pins)
+
+
 void setupSensors(pinData sensors[]) {
   // Initialize sensor objects
   for (int i = 0; i < numSensors; i++) {
