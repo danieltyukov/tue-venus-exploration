@@ -1,9 +1,5 @@
 #include "drv_movement.hpp"
 
-#include <Servo.h>
-
-int center = 93;
-
 void drive(int distance, Servo motorL, Servo motorR)
 {
     // This operation is called a ternary operator. You can look it up if you do not fully understand.
