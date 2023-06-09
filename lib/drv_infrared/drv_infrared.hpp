@@ -1,10 +1,9 @@
 #ifndef DRV_INFRARED_H
 #define DRV_INFRARED_H
-
 #include <Arduino.h>
 
-const int numSensors = 2;                   // number of sensors
-const int numReadings = 10;                 // number of readings for average
+const int numBlackSensors = 2;              // number of sensors
+const int numReadings = 2;                 // number of readings for average
 
 struct pinData {
   int sensorPin;
@@ -13,8 +12,16 @@ struct pinData {
   long total;
   int average;
 };
+enum lightness {
 
-void setupSensors(pinData sensors[]);
-int irRead(int cutoff1, int cutoff2, pinData & sensor);
+  black,
+  grey,
+  white
+  
+};
+
+void setupBlackSensors(pinData sensors[], int numSensors);
+bool irBlackRead(int cutoff, pinData& sensor);
+lightness irRead(int cutoff1, int cutoff2, pinData& sensor);
 
 #endif  // DRV_INFRARED_H

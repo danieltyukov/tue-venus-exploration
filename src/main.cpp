@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "drv_infrared.hpp"
 
-pinData sensors[numSensors];
+pinData sensors[numBlackSensors];
 int check = 0;
 int find_rock = 0;
 int rock_sample = 0;
@@ -18,7 +18,7 @@ int ir_bottom_right = 0;
 
 void setup() {
   Serial.begin(9600);
-  setupSensors(sensors);
+  setupBlackSensors(sensors, numBlackSensors);
 }
 
 //check function return boolean
@@ -153,4 +153,6 @@ void loop() {
   }
 
 }
+
+
 
