@@ -45,3 +45,23 @@ bool irBlackRead(int cutoff, pinData& sensor) {
   else 
     return false;
 }
+
+
+bool checkCrater(int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin){
+
+}
+
+bool checkBorder(int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin){
+}
+
+bool checkRockSample(int infrared_bottom_middle_pin){
+
+}
+
+bool checkRampBorder(int infrared_bottom_left_pin , int infrared_bottom_right_pin){
+
+}
+
+bool checkLabWall(int infrared_forward_pin){
+
+}
