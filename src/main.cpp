@@ -6,7 +6,6 @@ int check = 0;
 int find_rock = 0;
 int rock_sample = 0;
 
-
 int lab_beacon = 0;
 int lab_wall = 0;
 
@@ -19,6 +18,9 @@ int ir_bottom_right = 0;
 void setup() {
   Serial.begin(9600);
   setupBlackSensors(sensors, numBlackSensors);
+
+  // PIN_SETUP
+  pinMode(9, INPUT); // IR_LABRATORY_DETECTOR
 }
 
 //check function return boolean
