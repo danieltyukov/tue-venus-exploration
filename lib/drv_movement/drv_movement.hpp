@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-int center = 93;
+#define CENTER 93
 
 void drive(int distance, Servo motorL, Servo motorR);
 

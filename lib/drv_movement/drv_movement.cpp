@@ -7,16 +7,16 @@ void drive(int distance, Servo motorL, Servo motorR)
     // This is to allow for backwards motion.
     int c = distance < 0 ? -1 : 1;
 
-    // We add a small number to our defined center to let the motor start spinning.
+    // We add a small number to our defined CENTER to let the motor start spinning.
     // This value is multiplied by C to make it go forward or backward.
     // Because the motors oppose each other, one has a negative sign and the other a positive sign.
-    motorL.write(center + 5 * c);
-    motorR.write(center - 5 * c);
+    motorL.write(CENTER + 5 * c);
+    motorR.write(CENTER - 5 * c);
 
-    // After a delay, which is defined by the argument of distance, we return them back to center.
-    delay(abs(distance * 1000));
-    motorL.write(center);
-    motorR.write(center);
+    // After a delay, which is defined by the argument of distance, we return them back to CENTER.
+    delay(abs(distance * 90));
+    motorL.write(CENTER);
+    motorR.write(CENTER);
 }
 
 void turn(int angle, Servo motorL, Servo motorR)
@@ -26,11 +26,11 @@ void turn(int angle, Servo motorL, Servo motorR)
 
     // The operation is the same as for regular driving, but the negative sign is now positive
     // so the wheels spin to turn the robot.
-    motorL.write(center + 3 * c);
-    motorR.write(center + 3 * c);
-    delay(abs(angle * 10));
-    motorL.write(center);
-    motorR.write(center);
+    motorL.write(CENTER + 3 * c);
+    motorR.write(CENTER + 3 * c);
+    delay(abs(angle * 19));
+    motorL.write(CENTER);
+    motorR.write(CENTER);
 }
 
 void setGripper(bool state, Servo gripper)
