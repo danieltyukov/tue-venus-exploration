@@ -1,6 +1,9 @@
 #include "drv_ultrasonic.hpp"
 
-bool detectObstacle() {
+bool detectObstacle(int ultrasound_pin) {
+
+//DEFINE THE PIN USED
+
  long duration;
 
   pinMode(pingPin, OUTPUT);
@@ -17,7 +20,7 @@ bool detectObstacle() {
 
 
 
-void detect_mountain(bool check_forward, bool check_left, bool check_right, int pin){
+void checkMountain(int ultrasound_pin){
   // initialize serial communication:
   Serial.begin(9600);
   Servo myservo; 
@@ -29,15 +32,15 @@ void detect_mountain(bool check_forward, bool check_left, bool check_right, int 
    //forward
    myservo.write(90);
    delay(250);
-   check_forward = detect_obstacle();
+   //check_forward = detectObstacle(ultrasound_pin);
    //right
    myservo.write(45);
    delay(250);
-   check_right= detect_obstacle();
+   //check_right= detectObstacle(ultrasound_pin);
    //left
    myservo.write(135);
    delay(250);
-   check_right= detect_obstacle();
+   //check_left= detectObstacle(ultrasound_pin);
 
    return;
 }

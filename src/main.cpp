@@ -1,8 +1,14 @@
 #include <Arduino.h>
 #include "drv_infrared.hpp"
+#include "drv_labratory.hpp"
+#include "drv_movement.hpp"
+#include "drv_ultrasonic.hpp"
+#include "pathfinding.hpp"
 
-pinData sensors[numBlackSensors];
+//pinData sensors[numSensors];
 int check = 0;
+
+
 int find_rock = 0;
 int rock_sample = 0;
 
@@ -15,21 +21,45 @@ int lab_color_wall = 2;
 int ir_bottom_left = 0;
 int ir_bottom_right = 0; 
 
+
+
 void setup() {
   Serial.begin(9600);
-  setupBlackSensors(sensors, numBlackSensors);
+  //setupSensors(sensors);
 
   // PIN_SETUP
-  pinMode(9, INPUT); // IR_LABRATORY_DETECTOR
+  int labratory_pin = 9;
+
+  int infrared_bottom_left_pin = 5;
+  int infrared_bottom_right_pin = 5;
+  int infrared_bottom_middle_pin = 5;
+  int infrared_forward_pin = 5;
+
+  int ultrasound_pin = 5;
+
+  int movement_pin = 5;
+  int gripper_pin = 5;
+
+
+  //PIN_MODE
+  pinMode(labratory_pin, INPUT); // IR_LABRATORY_DETECTOR
+  pinMode(infrared_bottom_left_pin, INPUT);
+  pinMode(infrared_bottom_right_pin, INPUT);
+  pinMode(infrared_bottom_middle_pin, INPUT);
+  pinMode(infrared_forward_pin, INPUT);
+  pinMode(ultrasound_pin, INPUT);
+  pinMode(movement_pin, INPUT);
+  pinMode(gripper_pin, INPUT);
 }
 
-//check function return boolean
+void checkObstacles(){
 
-      //check for mountain
+  //checkMountain(ultrasound_pin);      //check for mountain
 
       //check for crater
 
       //check for border
+} 
 
 void loop() {
   //finding the rock loop
@@ -39,7 +69,7 @@ void loop() {
 
 
   while (find_rock == 0) {
-    //call drive forward
+    //drive(3, motorL, motorR);                  //call drive forward
 
     // call check function
     while (check == 1){
@@ -155,6 +185,4 @@ void loop() {
   }
 
 }
-
-
 
