@@ -6,14 +6,14 @@
 #include "pathfinding.hpp"
 
 //pinData sensors[numSensors];
-int check = 0;
+bool check = false;
 
 
-int find_rock = 0;
-int rock_sample = 0;
+bool find_rock;
+bool rock_sample;
 
-int lab_beacon = 0;
-int lab_wall = 0;
+bool lab_beacon = false;
+bool lab_wall = false;
 
 int gripper = 0;
 int lab_color_wall = 2;
@@ -21,13 +21,7 @@ int lab_color_wall = 2;
 int ir_bottom_left = 0;
 int ir_bottom_right = 0; 
 
-
-
-void setup() {
-  Serial.begin(9600);
-  //setupSensors(sensors);
-
-  // PIN_SETUP
+// PIN_SETUP
   int labratory_pin = 9;
 
   int infrared_bottom_left_pin = 5;
@@ -40,6 +34,13 @@ void setup() {
   int movement_pin = 5;
   int gripper_pin = 5;
 
+  Servo motorL;
+  Servo motorR;
+  Servo gripperServo;
+
+void setup() {
+  Serial.begin(9600);
+  //setupSensors(sensors);
 
   //PIN_MODE
   pinMode(labratory_pin, INPUT); // IR_LABRATORY_DETECTOR
@@ -52,13 +53,31 @@ void setup() {
   pinMode(gripper_pin, INPUT);
 }
 
-void checkObstacles(){
+bool checkObstacles(int ultrasound_pin, int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin){
+    bool checkMountain;
+    bool checkCrater;
+    bool checkBorder;
 
-  //checkMountain(ultrasound_pin);      //check for mountain
+    //checkMountain = checkMountain(ultrasound_pin);      //check for mountain  
+  	
+    // if (checkMountain == 1){
+    //   //turn right
+    // }
 
-      //check for crater
+    // if (checkMountain == 2){
+    //   //turn left
+    // }
 
-      //check for border
+    //checkCrater = checkCrater(infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);     //check for crater
+    //checkBorder = checkBorder(infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);     //check for border
+
+  if(checkCrater == false && checkBorder == false && checkMountain == false){
+    return 0;
+  }
+
+  else{
+    return 1; 
+  }
 } 
 
 void loop() {
@@ -68,41 +87,43 @@ void loop() {
   //Rotate 90 degrees
 
 
-  while (find_rock == 0) {
-    //drive(3, motorL, motorR);                  //call drive forward
+  while (find_rock == false) {
+    drive(3, motorL, motorR);                  //call drive forward
 
-    // call check function
-    while (check == 1){
-      // call turn function
-      // call check function
+    check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
+
+    while (check == true){
+      turn(30, motorL, motorR);
+      check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
     }
-    check = 0;
+    check = false;
 
-      //check for rock sample (rock_sample)
-    if(rock_sample == 1){
-      find_rock = 1;
-      //close gripper
+    rock_sample = checkRockSample(infrared_bottom_middle_pin);
+    if(rock_sample == true){
+      find_rock = true;
+      setGripper(1, gripperServo); //close gripper
     }
   }
 
-  find_rock = 0;
+  find_rock = false;
 
 
-  while (lab_wall = 0){
-    while (lab_beacon = 0){
+  while (lab_wall = false){
+    while (lab_beacon = false){
       //call lab beacon (int lab_beacon)
       //call turn (10 degrees)
     }
-  lab_beacon = 0;
+    lab_beacon = false;
 
-  //call check function
-  while (check == 1){
-    // call turn function
-    // call check function
-  }
-    check = 0;
+    check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
 
-  //call drive forward
+    while (check == 1){
+      turn(30, motorL, motorR);
+      check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
+    }
+    check = false;
+
+  drive(3, motorL, motorR);
 
   	  if(lab_beacon == 1){
         //check for lab wall (IR function) (int lab wall)

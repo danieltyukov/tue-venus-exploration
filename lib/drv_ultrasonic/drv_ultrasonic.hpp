@@ -7,6 +7,6 @@
 const int pingPin = 9;
 
 bool detectObstacle();
-void checkMountain(int ultrasound_pin);
+bool checkMountain(int ultrasound_pin);
 
 #endif  // DRV_ULTRASONIC_H

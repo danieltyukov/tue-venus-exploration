@@ -20,7 +20,7 @@ bool detectObstacle(int ultrasound_pin) {
 
 
 
-void checkMountain(int ultrasound_pin){
+bool checkMountain(int ultrasound_pin){
   // initialize serial communication:
   Serial.begin(9600);
   Servo myservo; 
