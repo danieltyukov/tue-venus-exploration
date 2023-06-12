@@ -27,7 +27,8 @@ lightness irRead(int cutoff1, int cutoff2, pinData& sensor);
 bool checkCrater(int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin);
 bool checkBorder(int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin);
 bool checkRockSample(int infrared_bottom_middle_pin);
-bool checkRampBorder(int infrared_bottom_left_pin , int infrared_bottom_right_pin);
+bool checkRampBorderLeft(int infrared_bottom_left_pin);
+bool checkRampBorderRight(int infrared_bottom_right_pin);
 bool checkLabWall(int infrared_forward_pin);
-
+bool checkLabColor(int infrared_forward_pin);
 #endif  // DRV_INFRARED_H

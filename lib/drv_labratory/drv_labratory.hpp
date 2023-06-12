@@ -3,6 +3,6 @@
 
 #include <Arduino.h>
 
-bool checkLabDetected(int pin);
+bool checkLabDetected(int labratory_pin);
 
 #endif  // DRV_LABRATORY_H

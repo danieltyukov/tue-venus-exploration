@@ -9,17 +9,17 @@
 bool check = false;
 
 
-bool find_rock;
-bool rock_sample;
+bool find_rock = false;
+bool rock_sample = false;
 
 bool lab_beacon = false;
 bool lab_wall = false;
 
-int gripper = 0;
-int lab_color_wall = 2;
+bool gripper = false;
+bool lab_color_wall = false;
 
-int ir_bottom_left = 0;
-int ir_bottom_right = 0; 
+bool ramp_left = false;
+bool ramp_right = false;
 
 // PIN_SETUP
   int labratory_pin = 9;
@@ -81,15 +81,14 @@ bool checkObstacles(int ultrasound_pin, int infrared_bottom_left_pin , int infra
 } 
 
 void loop() {
-  //finding the rock loop
+  //finding the rock loop  
 
-  //move 100 cm out of the lab
-  //Rotate 90 degrees
+  drive(-100, motorL, motorR);   //move 100 cm out of the lab
+  turn(90, motorL, motorR);      //Rotate 90 degrees
 
 
   while (find_rock == false) {
     drive(3, motorL, motorR);                  //call drive forward
-
     check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
 
     while (check == true){
@@ -102,107 +101,104 @@ void loop() {
     if(rock_sample == true){
       find_rock = true;
       setGripper(1, gripperServo); //close gripper
+      gripper = false;
     }
   }
 
   find_rock = false;
 
-
   while (lab_wall = false){
     while (lab_beacon = false){
-      //call lab beacon (int lab_beacon)
-      //call turn (10 degrees)
+      lab_beacon = checkLabDetected(ultrasound_pin);    //call lab beacon (int lab_beacon)
+      turn(30, motorL, motorR);   //call turn (10 degrees)
     }
     lab_beacon = false;
 
     check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
 
-    while (check == 1){
+    while (check == true){
       turn(30, motorL, motorR);
       check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
     }
     check = false;
 
-  drive(3, motorL, motorR);
+    drive(3, motorL, motorR);
 
-  	  if(lab_beacon == 1){
-        //check for lab wall (IR function) (int lab wall)
+  	  if(lab_beacon == true){
+        lab_wall = checkLabWall(infrared_forward_pin);    //check for lab wall (IR function) (int lab wall)
       }
   }
-  lab_wall = 0;
+  lab_wall = false;
 
-
-  while(gripper = 0){
-    //check for lab wall color (IR function)
+  while(gripper = false){
+    lab_color_wall = checkLabColor(infrared_forward_pin);//check for lab wall color (IR function)
   
     //lab_wall_color
 
-    //black = 0 (Right wall)
-    //white = 1 (Left wall)
+    //black = false (Right wall)
+    //white = true (Left wall)
 
-    if(lab_color_wall = 0){
-      lab_wall = 1;
-      while(lab_wall = 1) {
-      // call turn left function (5 degrees)
-      // call IR for lab_wall
+    if(lab_color_wall = false){
+      lab_wall = true;
+      while(lab_wall = true) {
+        turn(5, motorL, motorR);     // call turn left function (5 degrees)
+        checkLabWall(infrared_forward_pin);   // call IR for lab_wall
       }
-  
+
       for(int i = 0; i<32; i++) {
         //need to drive 125 cm infront
-        // call drive forward (4cm)
-        //call check IR for lab_wall
-      if(lab_wall == 1){}
-      // call turn left function (5 degrees)
+        drive(4, motorL, motorR);   // call drive forward (4cm)
+        lab_wall = checkLabWall(infrared_forward_pin);   //call check IR for lab_wall
+        if(lab_wall == true){
+          turn(5, motorL, motorR);  // call turn left function (5 degrees)
+        }
+        lab_wall = false;
       }
-    lab_wall = 0;
-
-    //call rotate 90 degrees
-
-    //need to drive 15cm infront
-
-    //call rotate 90 degrees
+    
+      turn(90, motorL, motorR);     //call rotate 90 degrees right
+      drive(15, motorL, motorR);   //need to drive 15cm infront
+      turn(90, motorL, motorR);    //call rotate 90 degrees right
     }
 
-    if(lab_color_wall = 1){
-      lab_wall = 1;
-      while(lab_wall = 1) {
-      // call turn right function (5 degrees)
-      // call IR for lab_wall
+    if(lab_color_wall = true){
+      lab_wall = true;
+      while(lab_wall = true) {
+        turn(5, motorL, motorR);   // call turn right function (5 degrees)
+        lab_wall = checkLabWall(infrared_forward_pin);   // call IR for lab_wall
       }
   
       for(int i = 0; i<32; i++) {
       //need to drive 125 cm infront
-      // call drive forward (4cm)
-      //call check IR for lab_wall
-        if(lab_wall == 1){
-          // call turn right function (5 degrees)
+      drive(4, motorL, motorR);   // call drive forward (4cm)
+      lab_wall = checkLabWall(infrared_forward_pin);    //call check IR for lab_wall
+        if(lab_wall == true){
+          turn(5, motorL, motorR);    // call turn right function (5 degrees)
         }
       }
-      lab_wall = 0;
+      lab_wall = false;
 
-      //call rotate 90 degrees
-
-      //need to drive 15cm infront
-
-      //call rotate 90 degrees
+      turn(90, motorL, motorR);   //call rotate 90 degrees left
+      drive(4, motorL, motorR);   //need to drive 15cm infront
+      turn(90, motorL, motorR);   //call rotate 90 degrees left
     }
 
-    lab_wall = 0;
+    lab_wall = false;
 
-    while (lab_wall == 0){
-      // drive forward (2 cm)
-      //call check IR for lab_wall
+    while (lab_wall == false){
+      drive(2, motorL, motorR);   // drive forward (2 cm)
+      lab_wall = checkLabWall(infrared_forward_pin);    //call check IR for lab_wall
       //check IR left and IR right for possible ramp
-      if(ir_bottom_left = 1){
-        //call turn left function (3 degrees)
+      ramp_left = checkRampBorderLeft(infrared_bottom_left_pin);
+      ramp_right = checkRampBorderRight(infrared_bottom_right_pin);
+      if(ramp_left = true){
+        turn(3, motorL, motorR);   //call turn left function (3 degrees)
       }
-      if(ir_bottom_right = 1){
-        //call turn right function (3 degrees)
+      if(ramp_right = true){
+        turn(3, motorL, motorR);   //call turn right function (3 degrees)
       }
     }
-  //call drop sample function
-
-  lab_color_wall = 2;
+    setGripper(1, gripperServo);    //call drop sample function
+    gripper = true;
   }
 
 }
