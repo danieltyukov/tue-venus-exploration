@@ -54,30 +54,14 @@ void setup() {
 }
 
 bool checkObstacles(int ultrasound_pin, int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin){
-    bool checkMountain;
-    bool checkCrater;
-    bool checkBorder;
-
-    //checkMountain = checkMountain(ultrasound_pin);      //check for mountain  
-  	
-    // if (checkMountain == 1){
+    //if (checkMountain == 1){
     //   //turn right
     // }
 
     // if (checkMountain == 2){
     //   //turn left
     // }
-
-    //checkCrater = checkCrater(infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);     //check for crater
-    //checkBorder = checkBorder(infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);     //check for border
-
-  if(checkCrater == false && checkBorder == false && checkMountain == false){
-    return 0;
-  }
-
-  else{
-    return 1; 
-  }
+  return (checkCrater(infrared_bottom_left_pin, infrared_bottom_middle_pin, infrared_bottom_right_pin) || checkBorder(infrared_bottom_left_pin, infrared_bottom_middle_pin, infrared_bottom_right_pin) || checkMountain(ultrasound_pin));
 } 
 
 void loop() {
@@ -177,10 +161,11 @@ void loop() {
       }
       lab_wall = false;
 
-      turn(90, motorL, motorR);   //call rotate 90 degrees left
+      turn(-90, motorL, motorR);   //call rotate 90 degrees left
       drive(4, motorL, motorR);   //need to drive 15cm infront
-      turn(90, motorL, motorR);   //call rotate 90 degrees left
+      turn(-90, motorL, motorR);   //call rotate 90 degrees left
     }
+
 
     lab_wall = false;
 

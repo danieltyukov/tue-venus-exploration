@@ -28,19 +28,27 @@ bool checkMountain(int ultrasound_pin){
   const int pingPin = 9;
   myservo.write(90);
  
-
+  
    //forward
    myservo.write(90);
    delay(250);
-   //check_forward = detectObstacle(ultrasound_pin);
+   bool check_forward = detectObstacle(ultrasound_pin);
+  delay(600);
    //right
    myservo.write(45);
    delay(250);
-   //check_right= detectObstacle(ultrasound_pin);
+   bool check_right= detectObstacle(ultrasound_pin);
+   delay(600);
    //left
-   myservo.write(135);
+   myservo.write(150);
    delay(250);
-   //check_left= detectObstacle(ultrasound_pin);
-
-   return;
+   bool check_left= detectObstacle(ultrasound_pin);
+    delay(600);
+    if(check_forward == true || check_left == true || check_right == true){
+      return true;
+    }
+    else{
+      return false;
+    }
+   
 }

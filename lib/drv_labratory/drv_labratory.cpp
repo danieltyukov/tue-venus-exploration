@@ -7,10 +7,5 @@ bool checkLabDetected(int labratory_pin) {
         delay(5);
     }
     int avg = j/40;
-    if (avg = 1) {
-        return false;
-    }
-    else {
-        return true;
-    }
+    return !avg;
 }
