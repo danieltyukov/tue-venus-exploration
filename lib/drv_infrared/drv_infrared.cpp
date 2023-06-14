@@ -1,6 +1,6 @@
 #include "drv_infrared.hpp"
 
-void setupBlackSensors(pinData sensors[], int numSensors) {
+void setupSensors(pinData sensors[], int numSensors) {
   // Initialize sensor objects
   for (int i = 0; i < numSensors; i++) {
     sensors[i].sensorPin = A0 + i;
@@ -47,31 +47,110 @@ bool irBlackRead(int cutoff, pinData& sensor) {
 }
 
 
-bool checkCrater(int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin){
+bool checkGround(int cutoff, pinData& sensor_left, pinData& sensor_right){
+  int analogValue_left = analogRead(sensor_left.sensorPin);                     // Read the value from the analog channel
+  int analogValue_right = analogRead(sensor_right.sensorPin);
+
+  sensor_left.total -= sensor_left.readings[sensor_left.readIndex];                   // Subtract the last reading
+  sensor_left.readings[sensor_left.readIndex] = analogValue_left;                     // Store the new reading
+  sensor_left.total += sensor_left.readings[sensor_left.readIndex];                   // Add the new reading to the total
+  sensor_left.readIndex = (sensor_left.readIndex + 1) % numReadings;             // Move to the next position in the array
+
+  sensor_right.total -= sensor_right.readings[sensor_right.readIndex];                   // Subtract the last reading
+  sensor_right.readings[sensor_right.readIndex] = analogValue_right;                     // Store the new reading
+  sensor_right.total += sensor_right.readings[sensor_right.readIndex];                   // Add the new reading to the total
+  sensor_right.readIndex = (sensor_right.readIndex + 1) % numReadings;             // Move to the next position in the array
+
+  int count = max(sensor_left.readIndex, numReadings);                  // Number of valid readings
+  sensor_left.average = sensor_left.total / count;
+  sensor_right.average = sensor_right.total / count;                               // Calculate the rolling average
+
+  if (sensor_left.average  > cutoff || sensor_right.average > cutoff) return true;
+  else return false; 
+}
+
+
+
+bool checkRockSample(int cutoff, pinData& sensor_front){
+  int analogValue_front = analogRead(sensor_front.sensorPin);                     // Read the value from the analog channel
+
+  sensor_front.total -= sensor_front.readings[sensor_front.readIndex];                   // Subtract the last reading
+  sensor_front.readings[sensor_front.readIndex] = analogValue_front;                     // Store the new reading
+  sensor_front.total += sensor_front.readings[sensor_front.readIndex];                   // Add the new reading to the total
+  sensor_front.readIndex = (sensor_front.readIndex + 1) % numReadings;             // Move to the next position in the array
+
+  int count = max(sensor_front.readIndex, numReadings);                  // Number of valid readings
+  sensor_front.average = sensor_front.total / count;                               // Calculate the rolling average
+
 
 }
 
-bool checkBorder(int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin){
+bool checkRampBorderLeft(int cutoff, pinData& sensor_left){
+  int analogValue_left = analogRead(sensor_left.sensorPin);                     // Read the value from the analog channel
+
+  sensor_left.total -= sensor_left.readings[sensor_left.readIndex];                   // Subtract the last reading
+  sensor_left.readings[sensor_left.readIndex] = analogValue_left;                     // Store the new reading
+  sensor_left.total += sensor_left.readings[sensor_left.readIndex];                   // Add the new reading to the total
+  sensor_left.readIndex = (sensor_left.readIndex + 1) % numReadings;             // Move to the next position in the array
+
+  int count = max(sensor_left.readIndex, numReadings);                  // Number of valid readings
+  sensor_left.average = sensor_left.total / count;                               // Calculate the rolling average
+
+  if (sensor_left.average > cutoff)
+    return true;
+  else 
+    return false;
 }
 
-bool checkRockSample(int infrared_bottom_middle_pin){
+bool checkRampBorderRight(int cutoff, pinData& sensor_right){
+  int analogValue_right = analogRead(sensor_right.sensorPin);                     // Read the value from the analog channel
+
+  sensor_right.total -= sensor_right.readings[sensor_right.readIndex];                   // Subtract the last reading
+  sensor_right.readings[sensor_right.readIndex] = analogValue_right;                     // Store the new reading
+  sensor_right.total += sensor_right.readings[sensor_right.readIndex];                   // Add the new reading to the total
+  sensor_right.readIndex = (sensor_right.readIndex + 1) % numReadings;             // Move to the next position in the array
+
+  int count = max(sensor_right.readIndex, numReadings);                  // Number of valid readings
+  sensor_right.average = sensor_right.total / count;                               // Calculate the rolling average
+
+  if (sensor_right.average > cutoff)
+    return true;
+  else 
+    return false;
 
 }
 
-bool checkRampBorderLeft(int infrared_bottom_left_pin){
+bool checkLabWall(int cutoff, pinData& sensor_front){
+  int analogValue_front = analogRead(sensor_front.sensorPin);                     // Read the value from the analog channel
 
+  sensor_front.total -= sensor_front.readings[sensor_front.readIndex];                   // Subtract the last reading
+  sensor_front.readings[sensor_front.readIndex] = analogValue_front;                     // Store the new reading
+  sensor_front.total += sensor_front.readings[sensor_front.readIndex];                   // Add the new reading to the total
+  sensor_front.readIndex = (sensor_front.readIndex + 1) % numReadings;             // Move to the next position in the array
+
+  int count = max(sensor_front.readIndex, numReadings);                  // Number of valid readings
+  sensor_front.average = sensor_front.total / count;                               // Calculate the rolling average
+
+  if (sensor_front.average > cutoff)
+    return false;
+  else 
+    return true;
 }
 
-bool checkRampBorderRight(int infrared_bottom_right_pin){
+bool checkLabColor(int cutoff, pinData& sensor_front){
+  int analogValue_left = analogRead(sensor_front.sensorPin);                     // Read the value from the analog channel
 
-}
+  sensor_front.total -= sensor_front.readings[sensor_front.readIndex];                   // Subtract the last reading
+  sensor_front.readings[sensor_front.readIndex] = analogValue_left;                     // Store the new reading
+  sensor_front.total += sensor_front.readings[sensor_front.readIndex];                   // Add the new reading to the total
+  sensor_front.readIndex = (sensor_front.readIndex + 1) % numReadings;             // Move to the next position in the array
 
-bool checkLabWall(int infrared_forward_pin){
+  int count = max(sensor_front.readIndex, numReadings);                  // Number of valid readings
+  sensor_front.average = sensor_front.total / count;                               // Calculate the rolling average
 
-}
-
-bool checkLabColor(int infrared_forward_pin){
-  //black = false (Right wall)
-  //white = true (Left wall)
+  if (sensor_front.average > cutoff)
+    return false;
+  else 
+    return true;
 
 }

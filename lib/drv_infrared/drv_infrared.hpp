@@ -2,7 +2,7 @@
 #define DRV_INFRARED_H
 #include <Arduino.h>
 
-const int numBlackSensors = 2;              // number of sensors
+const int numSensors = 4;              // number of sensors
 const int numReadings = 2;                 // number of readings for average
 
 struct pinData {
@@ -20,15 +20,14 @@ enum lightness {
   
 };
 
-void setupBlackSensors(pinData sensors[], int numSensors);
+void setupSensors(pinData sensors[], int numSensors);
 bool irBlackRead(int cutoff, pinData& sensor);
 lightness irRead(int cutoff1, int cutoff2, pinData& sensor);
 
-bool checkCrater(int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin);
-bool checkBorder(int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin);
-bool checkRockSample(int infrared_bottom_middle_pin);
-bool checkRampBorderLeft(int infrared_bottom_left_pin);
-bool checkRampBorderRight(int infrared_bottom_right_pin);
-bool checkLabWall(int infrared_forward_pin);
-bool checkLabColor(int infrared_forward_pin);
+bool checkGround(int cutoff, pinData& sensor_left, pinData& sensor_right);
+bool checkRockSample(int cutoff, pinData& sensor_front);
+bool checkRampBorderLeft(int cutoff, pinData& sensor_left);
+bool checkRampBorderRight(int cutoff, pinData& sensor_right);
+bool checkLabWall(int cutoff, pinData& sensor_front);
+bool checkLabColor(int cutoff, pinData& sensor_front);
 #endif  // DRV_INFRARED_H
