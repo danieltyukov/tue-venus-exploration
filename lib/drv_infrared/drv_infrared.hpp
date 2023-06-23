@@ -2,8 +2,8 @@
 #define DRV_INFRARED_H
 #include <Arduino.h>
 
-const int numSensors = 4;              // number of sensors
-const int numReadings = 2;                 // number of readings for average
+const int numSensors = 5;
+const int numReadings = 1;
 
 struct pinData {
   int sensorPin;
@@ -12,22 +12,18 @@ struct pinData {
   long total;
   int average;
 };
-enum lightness {
 
-  black,
-  grey,
-  white
-  
-};
+// void setupSensors(pinData sensors[], int numSensors);
+void setupLeftSensors(pinData sensors[], int numSensors);
+void setupRightSensors(pinData sensors[], int numSensors);
+void setupMiddleSensors(pinData sensors[], int numSensors);
+void setupMiddleSensorsLeft(pinData sensors[], int numSensors);
+void setupMiddleSensorsRight(pinData sensors[], int numSensors);
 
-void setupSensors(pinData sensors[], int numSensors);
-bool irBlackRead(int cutoff, pinData& sensor);
-lightness irRead(int cutoff1, int cutoff2, pinData& sensor);
-
-bool checkGround(int cutoff, pinData& sensor_left, pinData& sensor_right);
 bool checkRockSample(int cutoff, pinData& sensor_front);
+bool checkRockSampleLeft(int cutoff, pinData& sensor_front_left);
+bool checkRockSampleRight(int cutoff, pinData& sensor_front_right);
 bool checkRampBorderLeft(int cutoff, pinData& sensor_left);
 bool checkRampBorderRight(int cutoff, pinData& sensor_right);
 bool checkLabWall(int cutoff, pinData& sensor_front);
-bool checkLabColor(int cutoff, pinData& sensor_front);
 #endif  // DRV_INFRARED_H

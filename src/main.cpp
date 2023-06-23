@@ -1,190 +1,170 @@
 #include <Arduino.h>
+#include <Servo.h>
+#include "drv_movement.hpp"
+#include "drv_ultrasound.hpp"
 #include "drv_infrared.hpp"
 #include "drv_labratory.hpp"
-#include "drv_movement.hpp"
-#include "drv_ultrasonic.hpp"
-#include "pathfinding.hpp"
 
-//pinData sensors[numSensors];
-bool check = false;
+// pins
+#define LEFT_MOTOR_PIN 12
+#define RIGHT_MOTOR_PIN 13
+#define ULTRASOUND_PIN 10
+#define GRIPPER_PIN 9
+#define BEACON_PIN 8
+// #define LAB_BEACON_PIN 3
 
+#define LEFT_IR_DOWN_PIN A0
+#define RIGHT_IR_DOWN_PIN A1
 
-bool find_rock = false;
-bool rock_sample = false;
+#define MIDDLE_IR_DOWN_PIN A2
+#define MID_LEFT_IR_DOWN_PIN A4
+#define MID_RIGHT_IR_DOWN_PIN A5
 
-bool lab_beacon = false;
-bool lab_wall = false;
+// #define MIDDLE_IR_UP_PIN A3
+// #define LEFT_IR_UP_PIN A4
+// #define RIGHT_IR_UP_PIN A5
 
-bool gripper = false;
-bool lab_color_wall = false;
+Servo motorL; 
+Servo motorR; 
+Servo gripper;
 
-bool ramp_left = false;
-bool ramp_right = false;
+pinData sensor_left, sensor_right, sensor_front, sensor_front_left, sensor_front_right;
 
-// PIN_SETUP
-  int labratory_pin = 9;
-
-  int infrared_bottom_left_pin = 5;
-  int infrared_bottom_right_pin = 5;
-  int infrared_bottom_middle_pin = 5;
-  int infrared_forward_pin = 5;
-
-  int ultrasound_pin = 5;
-
-  int movement_pin = 5;
-  int gripper_pin = 5;
-
-  Servo motorL;
-  Servo motorR;
-  Servo gripperServo;
+bool block_picked_up = false;
 
 void setup() {
+  // pinMode(LAB_BEACON_PIN, OUTPUT);
+
+  motorL.attach(LEFT_MOTOR_PIN);
+  motorR.attach(RIGHT_MOTOR_PIN);
+  gripper.attach(GRIPPER_PIN);
+
+  // Setup sensors
+  setupLeftSensors(&sensor_left, 1);
+  setupRightSensors(&sensor_right, 1);
+ 
+  setupMiddleSensorsLeft(&sensor_front_left, 1);
+  setupMiddleSensorsRight(&sensor_front_right, 1);
+  
   Serial.begin(9600);
-  //setupSensors(sensors);
 
-  //PIN_MODE
-  pinMode(labratory_pin, INPUT); // IR_LABRATORY_DETECTOR
-  pinMode(infrared_bottom_left_pin, INPUT);
-  pinMode(infrared_bottom_right_pin, INPUT);
-  pinMode(infrared_bottom_middle_pin, INPUT);
-  pinMode(infrared_forward_pin, INPUT);
-  pinMode(ultrasound_pin, INPUT);
-  pinMode(movement_pin, INPUT);
-  pinMode(gripper_pin, INPUT);
+  setGripper(true, gripper);
+  setGripper(false, gripper);
 }
-
-bool checkObstacles(int ultrasound_pin, int infrared_bottom_left_pin , int infrared_bottom_right_pin, int infrared_bottom_middle_pin){
-    //if (checkMountain == 1){
-    //   //turn right
-    // }
-
-    // if (checkMountain == 2){
-    //   //turn left
-    // }
-  return (checkCrater(infrared_bottom_left_pin, infrared_bottom_middle_pin, infrared_bottom_right_pin) || checkBorder(infrared_bottom_left_pin, infrared_bottom_middle_pin, infrared_bottom_right_pin) || checkMountain(ultrasound_pin));
-} 
 
 void loop() {
-  //finding the rock loop  
+  // block_picked_up = true;
 
-  drive(-100, motorL, motorR);   //move 100 cm out of the lab
-  turn(90, motorL, motorR);      //Rotate 90 degrees
+  // if (block_picked_up) {
+  //   // move forward until checkRampBorderLeft and checkRampBorderRight
+  //   drive(5, motorL, motorR);
 
+  //   if(checkRampBorderLeft(700, sensor_left) && checkRampBorderRight(700, sensor_right)) {
+  //       Serial.println("RAMP!!!");
+  //       delay(20);
+  //       drive(20, motorL, motorR);
+  //       delay(20);
+  //       setGripper(false, gripper);
+  //       drive(-100, motorL, motorR);
+  //       block_picked_up = false;
+  //   }
+  // }
 
-  while (find_rock == false) {
-    drive(3, motorL, motorR);                  //call drive forward
-    check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
+  checkLabDetected(BEACON_PIN);
+  // Check for an obstacle
+  bool isObstacle = detectObstacle(ULTRASOUND_PIN);
 
-    while (check == true){
-      turn(30, motorL, motorR);
-      check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
-    }
-    check = false;
+  Serial.println("Left Border");
+  Serial.println(sensor_left.average);
+  Serial.println("Right Border");
+  Serial.println(sensor_right.average);
+  Serial.println("Front 1");
+  Serial.println(sensor_front.average);
+  Serial.println("Front 2");
+  Serial.println(sensor_front_left.average);
+  Serial.println("Front 3");
+  Serial.println(sensor_front_right.average);
+  Serial.println(" ");
 
-    rock_sample = checkRockSample(infrared_bottom_middle_pin);
-    if(rock_sample == true){
-      find_rock = true;
-      setGripper(1, gripperServo); //close gripper
-      gripper = false;
+  if (block_picked_up) {
+    while(!checkLabDetected(BEACON_PIN)) {
+      turn(25, motorL, motorR);
+      delay(20);
     }
   }
 
-  find_rock = false;
+  if (!isObstacle) {
+    // If no obstacle is detected, move forwardsensor_front_left
+    drive(5, motorL, motorR);
 
-  while (lab_wall = false){
-    while (lab_beacon = false){
-      lab_beacon = checkLabDetected(ultrasound_pin);    //call lab beacon (int lab_beacon)
-      turn(30, motorL, motorR);   //call turn (10 degrees)
+    if(checkRampBorderLeft(700, sensor_left) && checkRampBorderRight(700, sensor_right)) {
+        Serial.println("RAMP!!!");
+        drive(-5, motorL, motorR);
+        delay(10);
+        turn(75, motorL, motorR);
+        delay(10);
     }
-    lab_beacon = false;
 
-    check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
-
-    while (check == true){
-      turn(30, motorL, motorR);
-      check = checkObstacles(ultrasound_pin, infrared_bottom_left_pin , infrared_bottom_right_pin, infrared_bottom_middle_pin);
+    // Check for borders and rock samples
+    else if(checkRampBorderLeft(700, sensor_left)) {
+        Serial.println("LEFT BORDER!!!");
+        // If left border detected, turn right
+        turn(75, motorL, motorR);
+        delay(10);
     }
-    check = false;
+    else if(checkRampBorderRight(700, sensor_right)) {
+        Serial.println("RIGHT BORDER!!!");
+        // If right border detected, turn left
+        turn(-75, motorL, motorR);
+        delay(10);
+    }
 
-    drive(3, motorL, motorR);
-
-  	  if(lab_beacon == true){
-        lab_wall = checkLabWall(infrared_forward_pin);    //check for lab wall (IR function) (int lab wall)
+    if (!block_picked_up) {
+      if(checkRockSample(150, sensor_front)) {
+        Serial.println("ROCK SAMPLE!!!");
+        // If rock sample detected, grab it
+        setGripper(false, gripper);
+        delay(20);
+        drive(10, motorL, motorR);
+        delay(20);
+        setGripper(true, gripper);
+        delay(100);
+        block_picked_up = true;
       }
+      else if(checkRockSampleRight(500, sensor_front_right)) {
+        Serial.println("ROCK SAMPLE RIGHT!!!");
+        // If rock sample detected, grab it
+        setGripper(false, gripper);
+        delay(20);
+        turn(20, motorL, motorR);
+        delay(20);
+        drive(10, motorL, motorR);
+        delay(20);
+        setGripper(true, gripper);
+        delay(100);
+        block_picked_up = true;
+      }
+      else if(checkRockSampleLeft(500, sensor_front_left)) {
+        Serial.println("ROCK SAMPLE LEFT!!!");
+        // If rock sample detected, grab it
+        setGripper(false, gripper);
+        delay(20);
+        turn(-20, motorL, motorR);
+        delay(20);
+        drive(10, motorL, motorR);
+        delay(20);
+        setGripper(true, gripper);
+        delay(100);
+        block_picked_up = true;
+      }
+    }
+
+  } else {
+    Serial.println("MOUNTAIN!!!");
+    // If an obstacle is detected, stop, then turn right
+    drive(-5, motorL, motorR);
+    delay(10);
+    turn(-100, motorL, motorR); // Turn left
+    delay(20);
   }
-  lab_wall = false;
-
-  while(gripper = false){
-    lab_color_wall = checkLabColor(infrared_forward_pin);//check for lab wall color (IR function)
-  
-    //lab_wall_color
-
-    //black = false (Right wall)
-    //white = true (Left wall)
-
-    if(lab_color_wall = false){
-      lab_wall = true;
-      while(lab_wall = true) {
-        turn(5, motorL, motorR);     // call turn left function (5 degrees)
-        checkLabWall(infrared_forward_pin);   // call IR for lab_wall
-      }
-
-      for(int i = 0; i<32; i++) {
-        //need to drive 125 cm infront
-        drive(4, motorL, motorR);   // call drive forward (4cm)
-        lab_wall = checkLabWall(infrared_forward_pin);   //call check IR for lab_wall
-        if(lab_wall == true){
-          turn(5, motorL, motorR);  // call turn left function (5 degrees)
-        }
-        lab_wall = false;
-      }
-    
-      turn(90, motorL, motorR);     //call rotate 90 degrees right
-      drive(15, motorL, motorR);   //need to drive 15cm infront
-      turn(90, motorL, motorR);    //call rotate 90 degrees right
-    }
-
-    if(lab_color_wall = true){
-      lab_wall = true;
-      while(lab_wall = true) {
-        turn(5, motorL, motorR);   // call turn right function (5 degrees)
-        lab_wall = checkLabWall(infrared_forward_pin);   // call IR for lab_wall
-      }
-  
-      for(int i = 0; i<32; i++) {
-      //need to drive 125 cm infront
-      drive(4, motorL, motorR);   // call drive forward (4cm)
-      lab_wall = checkLabWall(infrared_forward_pin);    //call check IR for lab_wall
-        if(lab_wall == true){
-          turn(5, motorL, motorR);    // call turn right function (5 degrees)
-        }
-      }
-      lab_wall = false;
-
-      turn(-90, motorL, motorR);   //call rotate 90 degrees left
-      drive(4, motorL, motorR);   //need to drive 15cm infront
-      turn(-90, motorL, motorR);   //call rotate 90 degrees left
-    }
-
-
-    lab_wall = false;
-
-    while (lab_wall == false){
-      drive(2, motorL, motorR);   // drive forward (2 cm)
-      lab_wall = checkLabWall(infrared_forward_pin);    //call check IR for lab_wall
-      //check IR left and IR right for possible ramp
-      ramp_left = checkRampBorderLeft(infrared_bottom_left_pin);
-      ramp_right = checkRampBorderRight(infrared_bottom_right_pin);
-      if(ramp_left = true){
-        turn(3, motorL, motorR);   //call turn left function (3 degrees)
-      }
-      if(ramp_right = true){
-        turn(3, motorL, motorR);   //call turn right function (3 degrees)
-      }
-    }
-    setGripper(1, gripperServo);    //call drop sample function
-    gripper = true;
-  }
-
 }
-

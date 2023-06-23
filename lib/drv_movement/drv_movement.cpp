@@ -35,6 +35,7 @@ void turn(int angle, Servo motorL, Servo motorR)
 
 void setGripper(bool state, Servo gripper)
 {
-    // Gripper operation is exceptionally easy, as it is a standard servo.
+    // false: open
+    // true: closed
     gripper.write(state ? 140 : 0);
 }
