@@ -1,2 +1,2 @@
 # Venus Exploration Team 23
-## Venera-17 Rover
+## Sputnik-15 Rover
